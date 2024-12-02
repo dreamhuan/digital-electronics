@@ -107,7 +107,7 @@ function App() {
           posY={positions["and"].y}
           type="and"
           onMouseDown={(e) => handleMouseDown(e, "and")}
-          setLinkValues={(o) =>
+          setOutValue={(o: number) =>
             setLinkValues((pre) => ({
               ...pre,
               and_or: o,
@@ -120,7 +120,7 @@ function App() {
           posY={positions["or"].y}
           type="or"
           onMouseDown={(e) => handleMouseDown(e, "or")}
-          setLinkValues={(o) =>
+          setOutValue={(o: number) =>
             setLinkValues((pre) => ({
               ...pre,
               or_not: o,

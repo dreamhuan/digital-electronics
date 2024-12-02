@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 
-const not = (num: number) => (num === 0 ? 1 : 0);
+const not = (num: number): number => (num === 0 ? 1 : 0);
 export const NotGate = ({
   inX1,
   posX,
   posY,
   onMouseDown,
+  setOutValue,
 }: {
   inX1?: number;
   posX: number;
   posY: number;
   onMouseDown: (e: React.MouseEvent) => void;
+  setOutValue?: (out: number) => void;
 }) => {
   const [in1, setIn1] = useState(0);
   const [out, setOut] = useState(0);
@@ -24,6 +26,7 @@ export const NotGate = ({
   useEffect(() => {
     const o = not(in1);
     setOut(o);
+    setOutValue?.(o);
   }, [in1]);
 
   return (

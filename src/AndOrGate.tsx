@@ -7,7 +7,7 @@ export const AndOrGate = ({
   posY,
   type = "and",
   onMouseDown,
-  setLinkValues,
+  setOutValue,
 }: {
   inX1?: number;
   inX2?: number;
@@ -15,7 +15,7 @@ export const AndOrGate = ({
   posY: number;
   type?: "and" | "or";
   onMouseDown: (e: React.MouseEvent) => void;
-  setLinkValues: any; // TODO: type
+  setOutValue?: (out: number) => void;
 }) => {
   const [in1, setIn1] = useState(0);
   const [in2, setIn2] = useState(0);
@@ -33,7 +33,7 @@ export const AndOrGate = ({
   useEffect(() => {
     const o = type === "and" ? in1 & in2 : in1 | in2;
     setOut(o);
-    setLinkValues(o);
+    setOutValue?.(o);
   }, [in1, in2]);
 
   return (
