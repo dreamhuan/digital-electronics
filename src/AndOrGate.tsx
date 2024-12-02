@@ -1,21 +1,44 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const AndOrGate = ({
-  x,
-  y,
+  inX1,
+  inX2,
+  posX,
+  posY,
   type = "and",
   onMouseDown,
+  setLinkValues,
 }: {
-  x: number;
-  y: number;
+  inX1?: number;
+  inX2?: number;
+  posX: number;
+  posY: number;
   type?: "and" | "or";
   onMouseDown: (e: React.MouseEvent) => void;
+  setLinkValues: any; // TODO: type
 }) => {
   const [in1, setIn1] = useState(0);
   const [in2, setIn2] = useState(0);
+  const [out, setOut] = useState(0);
+
+  useEffect(() => {
+    if (inX1 !== undefined) {
+      setIn1(inX1);
+    }
+    if (inX2 !== undefined) {
+      setIn2(inX2);
+    }
+  }, [inX1, inX2]);
+
+  useEffect(() => {
+    const o = type === "and" ? in1 & in2 : in1 | in2;
+    setOut(o);
+    setLinkValues(o);
+  }, [in1, in2]);
+
   return (
     <>
-      <g transform={`translate(${x}, ${y})`}>
+      <g transform={`translate(${posX}, ${posY})`}>
         <rect
           x="0"
           y="0"
@@ -66,7 +89,7 @@ export const AndOrGate = ({
           dominantBaseline="middle"
           fill="black"
         >
-          {type === "and" ? in1 & in2 : in1 | in2}
+          {out}
         </text>
         <text
           x="50"
@@ -80,8 +103,8 @@ export const AndOrGate = ({
         </text>
       </g>
       <rect
-        x={x}
-        y={y}
+        x={posX}
+        y={posY}
         width="100"
         height="50"
         fill="transparent"

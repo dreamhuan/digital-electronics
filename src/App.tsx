@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import { AndOrGate } from "./AndOrGate";
 import { NotGate } from "./NotGate";
+import Link from "./Link";
 
 const BOARD_WIDTH = 1000;
 const BOARD_HEIGHT = 800;
@@ -14,6 +15,11 @@ function App() {
     or: { x: 250, y: 50 },
     not: { x: 450, y: 50 },
   }); // 初始位置
+  const [linkValues, setLinkValues] = useState<Record<string, number>>({
+    // 连接线的值
+    and_or: 0,
+    or_not: 0,
+  });
   const [draggingId, setDraggingId] = useState(""); // 是否正在拖拽
   const [offset, setOffset] = useState({ x: 0, y: 0 }); // 鼠标偏移量
 
@@ -64,6 +70,7 @@ function App() {
           display: "block",
           backgroundColor: "rgb(255, 255, 255)",
           border: "1px solid black",
+          userSelect: "none",
         }}
       >
         <defs>
@@ -96,21 +103,47 @@ function App() {
         ></rect>
 
         <AndOrGate
-          x={positions["and"].x}
-          y={positions["and"].y}
+          posX={positions["and"].x}
+          posY={positions["and"].y}
           type="and"
           onMouseDown={(e) => handleMouseDown(e, "and")}
+          setLinkValues={(o) =>
+            setLinkValues((pre) => ({
+              ...pre,
+              and_or: o,
+            }))
+          }
         />
         <AndOrGate
-          x={positions["or"].x}
-          y={positions["or"].y}
+          inX1={linkValues.and_or}
+          posX={positions["or"].x}
+          posY={positions["or"].y}
           type="or"
           onMouseDown={(e) => handleMouseDown(e, "or")}
+          setLinkValues={(o) =>
+            setLinkValues((pre) => ({
+              ...pre,
+              or_not: o,
+            }))
+          }
         />
         <NotGate
-          x={positions["not"].x}
-          y={positions["not"].y}
+          inX1={linkValues.or_not}
+          posX={positions["not"].x}
+          posY={positions["not"].y}
           onMouseDown={(e) => handleMouseDown(e, "not")}
+        />
+        <Link
+          posInX={positions["and"].x + 132}
+          posInY={positions["and"].y + 25}
+          posOutX={positions["or"].x - 32}
+          posOutY={positions["or"].y + 10}
+        />
+        <Link
+          posInX={positions["or"].x + 132}
+          posInY={positions["or"].y + 25}
+          posOutX={positions["not"].x - 32}
+          posOutY={positions["not"].y + 25}
         />
       </svg>
     </div>

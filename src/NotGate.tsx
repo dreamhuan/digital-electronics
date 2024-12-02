@@ -1,19 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const not = (num: number) => (num === 0 ? 1 : 0);
 export const NotGate = ({
-  x,
-  y,
+  inX1,
+  posX,
+  posY,
   onMouseDown,
 }: {
-  x: number;
-  y: number;
+  inX1?: number;
+  posX: number;
+  posY: number;
   onMouseDown: (e: React.MouseEvent) => void;
 }) => {
   const [in1, setIn1] = useState(0);
+  const [out, setOut] = useState(0);
+
+  useEffect(() => {
+    if (inX1 !== undefined) {
+      setIn1(inX1);
+    }
+  }, [inX1]);
+
+  useEffect(() => {
+    const o = not(in1);
+    setOut(o);
+  }, [in1]);
+
   return (
     <>
-      <g transform={`translate(${x}, ${y})`}>
+      <g transform={`translate(${posX}, ${posY})`}>
         <rect
           x="0"
           y="0"
@@ -51,7 +66,7 @@ export const NotGate = ({
           dominantBaseline="middle"
           fill="black"
         >
-          {not(in1)}
+          {out}
         </text>
         <text
           x="50"
@@ -65,8 +80,8 @@ export const NotGate = ({
         </text>
       </g>
       <rect
-        x={x}
-        y={y}
+        x={posX}
+        y={posY}
         width="100"
         height="50"
         fill="transparent"
