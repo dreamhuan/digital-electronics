@@ -11,10 +11,10 @@ export default function Link({
   posInY: number;
   posOutX: number;
   posOutY: number;
-  sType: "In" | "1" | "2"; // TODO 为2的逻辑暂时没有写
-  eType: "1" | "2";
-  sNum?: "1" | "2"; // TODO 逻辑暂时没有写
-  eNum?: "1" | "2";
+  sType: string; // "In" | "1" | "2"; // TODO 为2的逻辑暂时没有写
+  eType: string; // "1" | "2";
+  sNum?: string; // "0" | "1" | "2"; // TODO 逻辑暂时没有写
+  eNum?: string; //  "0" | "1" | "2";
 }) {
   return (
     <line

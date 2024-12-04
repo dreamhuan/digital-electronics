@@ -31,6 +31,63 @@ function App() {
     and1_or1: 0,
     and2_or1: 0,
   });
+  const gateConfArr = [
+    {
+      id: "a",
+      comp: In,
+      props: {
+        tag: "A",
+      },
+    },
+    {
+      id: "b",
+      comp: In,
+      props: {
+        tag: "B",
+      },
+    },
+    {
+      id: "not1",
+      comp: NotGate,
+      props: {},
+    },
+    {
+      id: "not2",
+      comp: NotGate,
+      props: {},
+    },
+    {
+      id: "and1",
+      comp: AndOrGate,
+      props: {
+        type: "and",
+      },
+    },
+    {
+      id: "and2",
+      comp: AndOrGate,
+      props: {
+        type: "and",
+      },
+    },
+    {
+      id: "or1",
+      comp: AndOrGate,
+      props: {
+        type: "or",
+      },
+    },
+  ] as const;
+  const linkConfArr = [
+    "a_not1_In_1_0_1",
+    "a_and2_In_2_0_1",
+    "b_not2_In_1_0_1",
+    "b_and1_In_2_0_2",
+    "not1_and1_1_2_0_1",
+    "not2_and2_1_2_0_2",
+    "and1_or1_1_2_0_1",
+    "and2_or1_1_2_0_2",
+  ];
   const [draggingId, setDraggingId] = useState(""); // 是否正在拖拽
   const [offset, setOffset] = useState({ x: 0, y: 0 }); // 鼠标偏移量
 
@@ -112,164 +169,60 @@ function App() {
           fill="url(#grid_item)"
         ></rect>
 
-        <In
-          tag="A"
-          posX={positions["a"].x}
-          posY={positions["a"].y}
-          onMouseDown={(e) => handleMouseDown(e, "a")}
-          setOutValue={(o: number) =>
-            setLinkValues((pre) => ({
-              ...pre,
-              a_not1: o,
-              a_and2: o,
-            }))
-          }
-        />
-        <In
-          tag="B"
-          posX={positions["b"].x}
-          posY={positions["b"].y}
-          onMouseDown={(e) => handleMouseDown(e, "b")}
-          setOutValue={(o: number) =>
-            setLinkValues((pre) => ({
-              ...pre,
-              b_not2: o,
-              b_and1: o,
-            }))
-          }
-        />
+        {gateConfArr.map((conf) => {
+          const inValues = linkConfArr
+            .map((linkConf) => linkConf.split("_"))
+            .filter((confItems) => confItems[1] === conf.id)
+            .reduce((acc, cur) => {
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const [a, b, c, d, e, f] = cur;
+              acc[`inX${f}`] = linkValues[`${a}_${b}`];
+              return acc;
+            }, {} as Record<string, number>);
 
-        <NotGate
-          inX1={linkValues.a_not1}
-          posX={positions["not1"].x}
-          posY={positions["not1"].y}
-          onMouseDown={(e) => handleMouseDown(e, "not1")}
-          setOutValue={(o: number) =>
-            setLinkValues((pre) => ({
-              ...pre,
-              not1_and1: o,
-            }))
-          }
-        />
-
-        <NotGate
-          inX1={linkValues.b_not2}
-          posX={positions["not2"].x}
-          posY={positions["not2"].y}
-          onMouseDown={(e) => handleMouseDown(e, "not2")}
-          setOutValue={(o: number) =>
-            setLinkValues((pre) => ({
-              ...pre,
-              not2_and2: o,
-            }))
-          }
-        />
-        <AndOrGate
-          inX1={linkValues.b_and1}
-          inX2={linkValues.not1_and1}
-          posX={positions["and1"].x}
-          posY={positions["and1"].y}
-          type="and"
-          onMouseDown={(e) => handleMouseDown(e, "and1")}
-          setOutValue={(o: number) =>
-            setLinkValues((pre) => ({
-              ...pre,
-              and1_or1: o,
-            }))
-          }
-        />
-        <AndOrGate
-          inX1={linkValues.a_and2}
-          inX2={linkValues.not2_and2}
-          posX={positions["and2"].x}
-          posY={positions["and2"].y}
-          type="and"
-          onMouseDown={(e) => handleMouseDown(e, "and2")}
-          setOutValue={(o: number) =>
-            setLinkValues((pre) => ({
-              ...pre,
-              and2_or1: o,
-            }))
-          }
-        />
-        <AndOrGate
-          inX1={linkValues.and1_or1}
-          inX2={linkValues.and2_or1}
-          posX={positions["or1"].x}
-          posY={positions["or1"].y}
-          type="or"
-          onMouseDown={(e) => handleMouseDown(e, "or1")}
-        />
-        <Link
-          sType="In"
-          eType="1"
-          posInX={positions["a"].x}
-          posInY={positions["a"].y}
-          posOutX={positions["not1"].x}
-          posOutY={positions["not1"].y}
-        />
-        <Link
-          sType="In"
-          eType="2"
-          eNum="1"
-          posInX={positions["a"].x}
-          posInY={positions["a"].y}
-          posOutX={positions["and2"].x}
-          posOutY={positions["and2"].y}
-        />
-        <Link
-          sType="In"
-          eType="1"
-          eNum="2"
-          posInX={positions["b"].x}
-          posInY={positions["b"].y}
-          posOutX={positions["not2"].x}
-          posOutY={positions["not2"].y}
-        />
-        <Link
-          sType="In"
-          eType="2"
-          posInX={positions["b"].x}
-          posInY={positions["b"].y}
-          posOutX={positions["and1"].x}
-          posOutY={positions["and1"].y}
-        />
-        <Link
-          sType="1"
-          eType="2"
-          eNum="1"
-          posInX={positions["not1"].x}
-          posInY={positions["not1"].y}
-          posOutX={positions["and1"].x}
-          posOutY={positions["and1"].y}
-        />
-        <Link
-          sType="1"
-          eType="2"
-          eNum="2"
-          posInX={positions["not2"].x}
-          posInY={positions["not2"].y}
-          posOutX={positions["and2"].x}
-          posOutY={positions["and2"].y}
-        />
-        <Link
-          sType="1"
-          eType="2"
-          eNum="1"
-          posInX={positions["and1"].x}
-          posInY={positions["and1"].y}
-          posOutX={positions["or1"].x}
-          posOutY={positions["or1"].y}
-        />
-        <Link
-          sType="1"
-          eType="2"
-          eNum="2"
-          posInX={positions["and2"].x}
-          posInY={positions["and2"].y}
-          posOutX={positions["or1"].x}
-          posOutY={positions["or1"].y}
-        />
+          const Comp = conf.comp;
+          return (
+            <Comp
+              key={conf.id}
+              posX={positions[conf.id].x}
+              posY={positions[conf.id].y}
+              {...conf.props}
+              {...inValues}
+              onMouseDown={(e) => handleMouseDown(e, conf.id)}
+              setOutValue={(o: number) => {
+                const values = linkConfArr
+                  .map((linkConf) => linkConf.split("_"))
+                  .filter((confItems) => confItems[0] === conf.id)
+                  .map(([a, b]) => `${a}_${b}`)
+                  .reduce((acc, cur) => {
+                    acc[cur] = o;
+                    return acc;
+                  }, {} as Record<string, number>);
+                setLinkValues((pre) => ({
+                  ...pre,
+                  ...values,
+                }));
+              }}
+            />
+          );
+        })}
+        {linkConfArr.map((linkConf) => {
+          const [inName, outName, sType, eType, sNum, eNum] =
+            linkConf.split("_");
+          return (
+            <Link
+              key={linkConf}
+              posInX={positions[inName].x}
+              posInY={positions[inName].y}
+              posOutX={positions[outName].x}
+              posOutY={positions[outName].y}
+              sType={sType}
+              eType={eType}
+              sNum={sNum}
+              eNum={eNum}
+            />
+          );
+        })}
       </svg>
     </div>
   );
