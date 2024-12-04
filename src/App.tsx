@@ -12,11 +12,11 @@ function App() {
   const [positions, setPositions] = useState<
     Record<string, { x: number; y: number }>
   >({
-    not1: { x: 150, y: 50 },
-    and1: { x: 350, y: 50 },
-    not2: { x: 150, y: 250 },
-    and2: { x: 350, y: 250 },
-    or1: { x: 550, y: 150 },
+    not1: { x: 200, y: 50 },
+    and1: { x: 500, y: 50 },
+    not2: { x: 200, y: 250 },
+    and2: { x: 500, y: 250 },
+    or1: { x: 800, y: 150 },
     a: { x: 50, y: 75 },
     b: { x: 50, y: 275 },
   }); // 初始位置
@@ -201,52 +201,74 @@ function App() {
           onMouseDown={(e) => handleMouseDown(e, "or1")}
         />
         <Link
-          posInX={positions["a"].x + 25}
+          sType="In"
+          eType="1"
+          posInX={positions["a"].x}
           posInY={positions["a"].y}
-          posOutX={positions["not1"].x - 35}
-          posOutY={positions["not1"].y + 25}
+          posOutX={positions["not1"].x}
+          posOutY={positions["not1"].y}
         />
         <Link
-          posInX={positions["a"].x + 25}
+          sType="In"
+          eType="2"
+          eNum="1"
+          posInX={positions["a"].x}
           posInY={positions["a"].y}
-          posOutX={positions["and2"].x - 35}
-          posOutY={positions["and2"].y + 5}
+          posOutX={positions["and2"].x}
+          posOutY={positions["and2"].y}
         />
         <Link
-          posInX={positions["b"].x + 25}
+          sType="In"
+          eType="1"
+          eNum="2"
+          posInX={positions["b"].x}
           posInY={positions["b"].y}
-          posOutX={positions["not2"].x - 35}
-          posOutY={positions["not2"].y + 25}
+          posOutX={positions["not2"].x}
+          posOutY={positions["not2"].y}
         />
         <Link
-          posInX={positions["b"].x + 25}
+          sType="In"
+          eType="2"
+          posInX={positions["b"].x}
           posInY={positions["b"].y}
-          posOutX={positions["and1"].x - 35}
-          posOutY={positions["and1"].y + 10}
+          posOutX={positions["and1"].x}
+          posOutY={positions["and1"].y}
         />
         <Link
-          posInX={positions["not1"].x + 132}
-          posInY={positions["not1"].y + 25}
-          posOutX={positions["and1"].x - 32}
-          posOutY={positions["and1"].y + 40}
+          sType="1"
+          eType="2"
+          eNum="1"
+          posInX={positions["not1"].x}
+          posInY={positions["not1"].y}
+          posOutX={positions["and1"].x}
+          posOutY={positions["and1"].y}
         />
         <Link
-          posInX={positions["not2"].x + 132}
-          posInY={positions["not2"].y + 25}
-          posOutX={positions["and2"].x - 32}
-          posOutY={positions["and2"].y + 40}
+          sType="1"
+          eType="2"
+          eNum="2"
+          posInX={positions["not2"].x}
+          posInY={positions["not2"].y}
+          posOutX={positions["and2"].x}
+          posOutY={positions["and2"].y}
         />
         <Link
-          posInX={positions["and1"].x + 132}
-          posInY={positions["and1"].y + 25}
-          posOutX={positions["or1"].x - 32}
-          posOutY={positions["or1"].y + 5}
+          sType="1"
+          eType="2"
+          eNum="1"
+          posInX={positions["and1"].x}
+          posInY={positions["and1"].y}
+          posOutX={positions["or1"].x}
+          posOutY={positions["or1"].y}
         />
         <Link
-          posInX={positions["and2"].x + 132}
-          posInY={positions["and2"].y + 25}
-          posOutX={positions["or1"].x - 32}
-          posOutY={positions["or1"].y + 45}
+          sType="1"
+          eType="2"
+          eNum="2"
+          posInX={positions["and2"].x}
+          posInY={positions["and2"].y}
+          posOutX={positions["or1"].x}
+          posOutY={positions["or1"].y}
         />
       </svg>
     </div>

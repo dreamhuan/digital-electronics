@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { ITEM_WIDTH, ITEM_HEIGHT, LINE_LENGTH, NUM_LENGTH } from "./constants";
 
+const ITEM_HEIGHT_STEP = ITEM_HEIGHT / 2;
 const not = (num: number): number => (num === 0 ? 1 : 0);
 export const NotGate = ({
   inX1,
@@ -35,15 +37,22 @@ export const NotGate = ({
         <rect
           x="0"
           y="0"
-          width="100"
-          height="50"
+          width={ITEM_WIDTH}
+          height={ITEM_HEIGHT}
           fill="lightblue"
           stroke="black"
         />
-        <line x1="-20" y1="25" x2="0" y2="25" stroke="black" strokeWidth="2" />
+        <line
+          x1={-LINE_LENGTH}
+          y1={ITEM_HEIGHT_STEP}
+          x2="0"
+          y2={ITEM_HEIGHT_STEP}
+          stroke="black"
+          strokeWidth="2"
+        />
         <text
-          x="-25"
-          y="27"
+          x={-(LINE_LENGTH + NUM_LENGTH)}
+          y={ITEM_HEIGHT_STEP + 2}
           fontSize="16"
           textAnchor="middle"
           dominantBaseline="middle"
@@ -54,16 +63,16 @@ export const NotGate = ({
           {in1}
         </text>
         <line
-          x1="100"
-          y1="25"
-          x2="120"
-          y2="25"
+          x1={ITEM_WIDTH}
+          y1={ITEM_HEIGHT_STEP}
+          x2={ITEM_WIDTH + LINE_LENGTH}
+          y2={ITEM_HEIGHT_STEP}
           stroke="black"
           strokeWidth="2"
         />
         <text
-          x="125"
-          y="27"
+          x={ITEM_WIDTH + LINE_LENGTH + NUM_LENGTH}
+          y={ITEM_HEIGHT_STEP + 2}
           fontSize="16"
           textAnchor="middle"
           dominantBaseline="middle"
@@ -72,8 +81,8 @@ export const NotGate = ({
           {out}
         </text>
         <text
-          x="50"
-          y="25"
+          x={ITEM_WIDTH / 2}
+          y={ITEM_HEIGHT / 2}
           fontSize="16"
           textAnchor="middle"
           dominantBaseline="middle"
@@ -85,8 +94,8 @@ export const NotGate = ({
       <rect
         x={posX}
         y={posY}
-        width="100"
-        height="50"
+        width={ITEM_WIDTH}
+        height={ITEM_HEIGHT}
         fill="transparent"
         onMouseDown={onMouseDown}
         style={{ cursor: "move" }}

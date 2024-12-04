@@ -16,7 +16,7 @@ export const In = ({
   setOutValue?: (out: number) => void;
 }) => {
   const [in1, setIn1] = useState(0);
-  const [out, setOut] = useState(0);
+  const [, setOut] = useState(0);
 
   useEffect(() => {
     if (inX1 !== undefined) {
