@@ -1,231 +1,143 @@
-import { useState } from "react";
-import "./App.css";
-import { AndOrGate } from "./AndOrGate";
-import { NotGate } from "./NotGate";
-import Link from "./Link";
-import { In } from "./In";
+import { useEffect, useRef } from "react";
+import { LGraph, LGraphCanvas, LiteGraph } from "litegraph.js";
+import "litegraph.js/css/litegraph.css";
 
-const BOARD_WIDTH = 1000;
-const BOARD_HEIGHT = 800;
+const needNodeTypeList = [
+  "basic/boolean",
+  "basic/watch",
+  "logic/AND",
+  "logic/OR",
+  "logic/NOT",
+];
+export default function App() {
+  const containerRef = useRef<HTMLCanvasElement | null>(null);
+  const graphRef = useRef<LGraph | null>(null);
+  const canvasRef = useRef<LGraphCanvas | null>(null);
 
-function App() {
-  const [positions, setPositions] = useState<
-    Record<string, { x: number; y: number }>
-  >({
-    not1: { x: 200, y: 50 },
-    and1: { x: 500, y: 50 },
-    not2: { x: 200, y: 250 },
-    and2: { x: 500, y: 250 },
-    or1: { x: 800, y: 150 },
-    a: { x: 50, y: 75 },
-    b: { x: 50, y: 275 },
-  }); // 初始位置
-  const [linkValues, setLinkValues] = useState<Record<string, number>>({
-    // 连接线的值
-    a_not1: 0,
-    a_and2: 0,
-    b_not2: 0,
-    b_and1: 0,
-    not1_and1: 0,
-    not2_and2: 0,
-    and1_or1: 0,
-    and2_or1: 0,
-  });
-  const gateConfArr = [
-    {
-      id: "a",
-      comp: In,
-      props: {
-        tag: "A",
-      },
-    },
-    {
-      id: "b",
-      comp: In,
-      props: {
-        tag: "B",
-      },
-    },
-    {
-      id: "not1",
-      comp: NotGate,
-      props: {},
-    },
-    {
-      id: "not2",
-      comp: NotGate,
-      props: {},
-    },
-    {
-      id: "and1",
-      comp: AndOrGate,
-      props: {
-        type: "and",
-      },
-    },
-    {
-      id: "and2",
-      comp: AndOrGate,
-      props: {
-        type: "and",
-      },
-    },
-    {
-      id: "or1",
-      comp: AndOrGate,
-      props: {
-        type: "or",
-      },
-    },
-  ] as const;
-  const linkConfArr = [
-    "a_not1_In_1_0_1",
-    "a_and2_In_2_0_1",
-    "b_not2_In_1_0_1",
-    "b_and1_In_2_0_2",
-    "not1_and1_1_2_0_1",
-    "not2_and2_1_2_0_2",
-    "and1_or1_1_2_0_1",
-    "and2_or1_1_2_0_2",
-  ];
-  const [draggingId, setDraggingId] = useState(""); // 是否正在拖拽
-  const [offset, setOffset] = useState({ x: 0, y: 0 }); // 鼠标偏移量
-
-  const handleMouseDown = (e: React.MouseEvent, id: string) => {
-    setDraggingId(id);
-    // 计算鼠标点击点与矩形左上角的偏移
-    setOffset({
-      x: e.clientX - positions[id].x,
-      y: e.clientY - positions[id].y,
-    });
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (draggingId) {
-      const newX = e.clientX - offset.x;
-      const newY = e.clientY - offset.y;
-
-      // 限制矩形在画布范围内
-      setPositions((pre) => ({
-        ...pre,
-        [draggingId]: {
-          x: Math.max(0, Math.min(newX, BOARD_WIDTH - 100)), // 500 是 SVG 宽度，100 是矩形宽度
-          y: Math.max(0, Math.min(newY, BOARD_HEIGHT - 50)), // 400 是 SVG 高度，50 是矩形高度
-        },
-      }));
+  useEffect(() => {
+    if (!containerRef.current) {
+      return;
     }
+    if (graphRef.current && canvasRef.current) {
+      return;
+    }
+    const graph = new LGraph();
+    graphRef.current = graph;
+    const canvas = new LGraphCanvas(containerRef.current, graph);
+    canvasRef.current = canvas;
+
+    console.log(LiteGraph.registered_node_types); // 打印所有已注册类型
+    const allNoteTypeList = Object.keys(LiteGraph.registered_node_types);
+    allNoteTypeList.forEach((type) => {
+      if (!needNodeTypeList.includes(type)) {
+        LiteGraph.unregisterNodeType(type);
+      }
+    });
+    LiteGraph.searchbox_extras = {};
+
+    const b1Node = LiteGraph.createNode("basic/boolean");
+    b1Node.pos = [100, 100];
+    graph.add(b1Node);
+    const b2Node = LiteGraph.createNode("basic/boolean");
+    b2Node.pos = [100, 300];
+    graph.add(b2Node);
+
+    const not1Node = LiteGraph.createNode("logic/NOT");
+    not1Node.pos = [300, 100];
+    graph.add(not1Node);
+    const not2Node = LiteGraph.createNode("logic/NOT");
+    not2Node.pos = [300, 300];
+    graph.add(not2Node);
+
+    const and1Node = LiteGraph.createNode("logic/AND");
+    and1Node.pos = [500, 100];
+    graph.add(and1Node);
+    const and2Node = LiteGraph.createNode("logic/AND");
+    and2Node.pos = [500, 300];
+    graph.add(and2Node);
+
+    const orNode = LiteGraph.createNode("logic/OR");
+    orNode.pos = [700, 200];
+    graph.add(orNode);
+
+    const watchNode = LiteGraph.createNode("basic/watch");
+    watchNode.pos = [900, 200];
+    graph.add(watchNode);
+
+    b1Node.connect(0, not1Node, 0);
+    b1Node.connect(0, and2Node, 0);
+
+    b2Node.connect(0, not2Node, 0);
+    b2Node.connect(0, and1Node, 1);
+
+    not1Node.connect(0, and1Node, 0);
+    not2Node.connect(0, and2Node, 1);
+
+    and1Node.connect(0, orNode, 0);
+    and2Node.connect(0, orNode, 1);
+
+    orNode.connect(0, watchNode, 0);
+    graph.start();
+  }, []);
+
+  const download = () => {
+    const data = JSON.stringify(graphRef.current?.serialize());
+    const file = new Blob([data]);
+    const url = URL.createObjectURL(file);
+    const element = document.createElement("a");
+    element.setAttribute("href", url);
+    element.setAttribute("download", "graph.JSON");
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    setTimeout(function () {
+      URL.revokeObjectURL(url);
+    }, 1000 * 60); //wait one minute to revoke url
   };
 
-  const handleMouseUp = () => {
-    setDraggingId(""); // 停止拖拽
+  const save = () => {
+    console.log("saved");
+    localStorage.setItem(
+      "litegraph_digital_electronics_save",
+      JSON.stringify(graphRef.current?.serialize())
+    );
+  };
+
+  const load = () => {
+    const data = localStorage.getItem("litegraph_digital_electronics_save");
+    if (data) {
+      graphRef.current?.configure(JSON.parse(data));
+    }
+    console.log("loaded");
+  };
+
+  const drop = function (e: React.DragEvent<HTMLCanvasElement>) {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    const file = files[0];
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const fileContent = event.target?.result;
+      if (fileContent) {
+        graphRef.current?.configure(JSON.parse(fileContent as string));
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
     <div>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        version="1.1"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-        id="designer_grids"
-        width={BOARD_WIDTH}
-        height={BOARD_HEIGHT}
-        onMouseMove={handleMouseMove} // 监听鼠标移动
-        onMouseUp={handleMouseUp} // 鼠标释放时停止拖拽
-        onMouseLeave={handleMouseUp} // 鼠标移出画布时停止拖拽
+      <div
         style={{
-          width: BOARD_WIDTH,
-          height: BOARD_HEIGHT,
-          display: "block",
-          backgroundColor: "rgb(255, 255, 255)",
-          border: "1px solid black",
-          userSelect: "none",
+          display: "flex",
         }}
       >
-        <defs>
-          <pattern
-            id="grid_item"
-            width="61"
-            height="61"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              strokeWidth="1"
-              fill="none"
-              d="M0 15L60 15M15 0L15 60M0 30L60 30M30 0L30 60M0 45L60 45M45 0L45 60"
-              stroke="rgb(242,242,242)"
-            ></path>
-            <path
-              strokeWidth="1"
-              fill="none"
-              d="M0 60L60 60M60 0L60 60"
-              stroke="rgb(229,229,229)"
-            ></path>
-          </pattern>
-        </defs>
-        <rect
-          id="board"
-          width={BOARD_WIDTH}
-          height={BOARD_HEIGHT}
-          fill="url(#grid_item)"
-        ></rect>
-
-        {gateConfArr.map((conf) => {
-          const inValues = linkConfArr
-            .map((linkConf) => linkConf.split("_"))
-            .filter((confItems) => confItems[1] === conf.id)
-            .reduce((acc, cur) => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              const [a, b, c, d, e, f] = cur;
-              acc[`inX${f}`] = linkValues[`${a}_${b}`];
-              return acc;
-            }, {} as Record<string, number>);
-
-          const Comp = conf.comp;
-          return (
-            <Comp
-              key={conf.id}
-              posX={positions[conf.id].x}
-              posY={positions[conf.id].y}
-              {...conf.props}
-              {...inValues}
-              onMouseDown={(e) => handleMouseDown(e, conf.id)}
-              setOutValue={(o: number) => {
-                const values = linkConfArr
-                  .map((linkConf) => linkConf.split("_"))
-                  .filter((confItems) => confItems[0] === conf.id)
-                  .map(([a, b]) => `${a}_${b}`)
-                  .reduce((acc, cur) => {
-                    acc[cur] = o;
-                    return acc;
-                  }, {} as Record<string, number>);
-                setLinkValues((pre) => ({
-                  ...pre,
-                  ...values,
-                }));
-              }}
-            />
-          );
-        })}
-        {linkConfArr.map((linkConf) => {
-          const [inName, outName, sType, eType, sNum, eNum] =
-            linkConf.split("_");
-          return (
-            <Link
-              key={linkConf}
-              posInX={positions[inName].x}
-              posInY={positions[inName].y}
-              posOutX={positions[outName].x}
-              posOutY={positions[outName].y}
-              sType={sType}
-              eType={eType}
-              sNum={sNum}
-              eNum={eNum}
-            />
-          );
-        })}
-      </svg>
+        <button onClick={save}>Save</button>
+        <button onClick={load}>Load</button>
+        <button onClick={download}>Download</button>
+      </div>
+      <canvas ref={containerRef} width={1000} height={800} onDrop={drop} />
     </div>
   );
 }
-
-export default App;
