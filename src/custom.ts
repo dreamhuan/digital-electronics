@@ -468,7 +468,7 @@ class RAM extends LGraphNode {
 
 class CLKTrigger extends LGraphNode {
   prevClk = 0;
-  prevQ = 0;
+  innerQ = 0;
   constructor() {
     super("边沿触发器");
     //add some input slots
@@ -487,11 +487,10 @@ class CLKTrigger extends LGraphNode {
     if (D === undefined) D = 0;
     let clk = this.getInputData(1);
     if (clk === undefined) clk = 0;
-    let Q = this.prevQ;
     if (!this.prevClk && clk) {
-      Q = D;
-      this.prevQ = Q;
+      this.innerQ = D;
     }
+    const Q = this.innerQ;
     this.prevClk = clk;
     //assing data to outputs
     this.setOutputData(0, !!Q);
@@ -548,30 +547,51 @@ class Through extends LGraphNode {
 }
 
 class PC extends LGraphNode {
-  time = Date.now();
-  prevT = 0;
+  prevClk = 0;
+  innerQ = 0;
+
   constructor() {
     super("计数器");
     //add some input slots
     this.addInput("clk", "boolean");
+    this.addInput("rst", "boolean");
     //add some output slots
     this.addOutput("Q0", "boolean");
     this.addOutput("Q1", "boolean");
     this.addOutput("Q2", "boolean");
     this.addOutput("Q3", "boolean");
     //add some properties
-    this.properties = { precision: 1 };
+    this.properties = { precision: 1, count: 0 };
+  }
+
+  onDrawForeground(ctx: CanvasRenderingContext2D, graphcanvas) {
+    if (this.flags.collapsed) return;
+    ctx.save();
+    ctx.font = "bold 30px 'Arial'";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(this.properties.count, 65, 55);
+    ctx.restore();
   }
 
   onExecute() {
-    let clk = this.prevT;
-    if (Date.now() - this.time > 1000) {
-      this.time = Date.now();
-      this.prevT = (this.prevT + 1) % 16;
-      clk = this.prevT;
-      // console.log("PulseSignal change to", clk);
+    //retrieve data from inputs
+    let clk = this.getInputData(0);
+    if (clk === undefined) clk = 0;
+    let rst = this.getInputData(1);
+    if (rst === undefined) rst = 0;
+
+    if (!this.prevClk && clk) {
+      this.innerQ = (this.innerQ + 1) % 16;
     }
-    const Q = clk;
+    if (rst) {
+      this.innerQ = 0;
+    }
+    const Q = this.innerQ;
+    this.prevClk = clk;
+    this.properties.count = Q;
+
     const Q0 = Q % 2;
     const Q1 = (Q >> 1) % 2;
     const Q2 = (Q >> 2) % 2;
