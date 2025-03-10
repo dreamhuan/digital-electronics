@@ -564,7 +564,7 @@ class PC extends LGraphNode {
     this.properties = { precision: 1, count: 0 };
   }
 
-  onDrawForeground(ctx: CanvasRenderingContext2D, graphcanvas) {
+  onDrawForeground(ctx: CanvasRenderingContext2D) {
     if (this.flags.collapsed) return;
     ctx.save();
     ctx.font = "bold 30px 'Arial'";
