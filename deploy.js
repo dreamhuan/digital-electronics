@@ -9,7 +9,7 @@ try {
 
   // 1. 打包
   console.log("Building the project...");
-  execSync("yarn build", { stdio: "inherit" });
+  execSync("npm run build", { stdio: "inherit" });
 
   // 2. 进入目标文件夹
   const targetDir = path.resolve(__dirname, "digital-electronics");
