@@ -7,3 +7,7 @@
 - 组件拖拽
 - 自定义组件
 - 运算
+
+litegraph.js库真牛逼！！！接入一个库上面功能全有了，甚至额外有了配置导入导出的能力！  
+特别鸣谢[litegraph.js](https://github.com/jagenjo/litegraph.js)  
+说起来你可能不信，我还是学习comfyui的时候发现这个宝藏库的，就是用起来有些东西只能看源码ORZ...  

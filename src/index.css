@@ -45,6 +45,7 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  user-select: none;
 }
 button:hover {
   border-color: #646cff;
@@ -68,8 +69,6 @@ button:focus-visible {
 }
 
 #root {
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
